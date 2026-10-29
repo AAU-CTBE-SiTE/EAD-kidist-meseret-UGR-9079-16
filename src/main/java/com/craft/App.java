@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Query;
 import java.util.List;
 
 public class App {
@@ -212,6 +213,91 @@ public class App {
             em.close();
         }
     }
+    // 7. Get students ordered by name
+    public static List<Student> getStudentsOrderedByName() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s ORDER BY s.name ASC",
+                    Student.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 8. Get students ordered by ID, highest first
+    public static List<Student> getStudentsOrderedByIdDescending() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s ORDER BY s.id DESC",
+                    Student.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 9. Count all students
+    public static long countStudents() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Long> query = em.createQuery(
+                    "SELECT COUNT(s) FROM Student s",
+                    Long.class);
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 10. Find the minimum student ID
+    public static Integer getMinimumStudentId() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Integer> query = em.createQuery(
+                    "SELECT MIN(s.id) FROM Student s",
+                    Integer.class);
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 11. Find the maximum student ID
+    public static Integer getMaximumStudentId() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Integer> query = em.createQuery(
+                    "SELECT MAX(s.id) FROM Student s",
+                    Integer.class);
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 12. Get students with a specific technology and name pattern
+    public static List<Student> getStudentsByTechAndNamePattern(
+            String tech, String pattern) {
+
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s " +
+                            "WHERE s.tech = :tech AND s.name LIKE :pattern",
+                    Student.class);
+
+            query.setParameter("tech", tech);
+            query.setParameter("pattern", "%" + pattern + "%");
+
+            return query.getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
 
     public static void main(String[] args) {
         try {
@@ -265,7 +351,22 @@ public class App {
 
             System.out.println("Students with ID greater than 0:");
             System.out.println(getStudentsWithIdGreaterThan(0));
+            System.out.println("\n--- JPQL TESTS 7–12 ---");
 
+            System.out.println("Students ordered by name:");
+            System.out.println(getStudentsOrderedByName());
+
+            System.out.println("Students ordered by ID descending:");
+            System.out.println(getStudentsOrderedByIdDescending());
+
+            System.out.println("Total students: " + countStudents());
+
+            System.out.println("Minimum student ID: " + getMinimumStudentId());
+
+            System.out.println("Maximum student ID: " + getMaximumStudentId());
+
+            System.out.println("Java students whose names contain 'Snow':");
+            System.out.println(getStudentsByTechAndNamePattern("Java", "Snow"));
         } finally {
             emf.close();
         }
