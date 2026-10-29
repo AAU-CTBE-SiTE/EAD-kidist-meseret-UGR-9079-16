@@ -380,6 +380,93 @@ public class App {
             em.close();
         }
     }
+    // 19. Count technologies with more than 2 students
+    public static List<Object[]> getTechsWithMoreThanTwoStudents() {
+        EntityManager em = getEntityManager();
+        try {
+            Query query = em.createQuery(
+                    "SELECT s.tech, COUNT(s) FROM Student s " +
+                            "GROUP BY s.tech HAVING COUNT(s) > 2"
+            );
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 20. Find the student with the highest ID
+    public static List<Student> getStudentWithHighestId() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE s.id = " +
+                            "(SELECT MAX(s2.id) FROM Student s2)",
+                    Student.class
+            );
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 21. Find students using the same technology as student ID 1
+    public static List<Student> getStudentsWithSameTechAsStudentOne() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE s.tech = " +
+                            "(SELECT s2.tech FROM Student s2 WHERE s2.id = 1)",
+                    Student.class
+            );
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 22. Find students who share their technology with another student
+    public static List<Student> getStudentsSharingTech() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE EXISTS " +
+                            "(SELECT s2 FROM Student s2 " +
+                            "WHERE s2.tech = s.tech AND s2.id <> s.id)",
+                    Student.class
+            );
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 23. Get student names in uppercase
+    public static List<String> getStudentNamesUppercase() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<String> query = em.createQuery(
+                    "SELECT UPPER(s.name) FROM Student s",
+                    String.class
+            );
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 24. Get the length of each student name
+    public static List<Integer> getStudentNameLengths() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Integer> query = em.createQuery(
+                    "SELECT LENGTH(s.name) FROM Student s",
+                    Integer.class
+            );
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
     public static void main(String[] args) {
         try {
             // CREATE
@@ -469,6 +556,27 @@ public class App {
 
             System.out.println("Students with NULL technology:");
             System.out.println(getStudentsWithNullTech());
+            System.out.println("\n--- JPQL TESTS 19–24 ---");
+
+            System.out.println("Technologies with more than 2 students:");
+            for (Object[] row : getTechsWithMoreThanTwoStudents()) {
+                System.out.println(row[0] + " = " + row[1]);
+            }
+
+            System.out.println("Student with highest ID:");
+            System.out.println(getStudentWithHighestId());
+
+            System.out.println("Students with the same tech as student ID 1:");
+            System.out.println(getStudentsWithSameTechAsStudentOne());
+
+            System.out.println("Students sharing technology:");
+            System.out.println(getStudentsSharingTech());
+
+            System.out.println("Uppercase student names:");
+            System.out.println(getStudentNamesUppercase());
+
+            System.out.println("Student name lengths:");
+            System.out.println(getStudentNameLengths());
         } finally {
             emf.close();
         }
