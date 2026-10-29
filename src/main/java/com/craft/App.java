@@ -467,6 +467,71 @@ public class App {
             em.close();
         }
     }
+    // 25. Calculate the sum of all student IDs
+    public static Long getSumOfStudentIds() {
+        EntityManager em = getEntityManager();
+
+        try {
+            TypedQuery<Long> query = em.createQuery(
+                    "SELECT SUM(s.id) FROM Student s",
+                    Long.class
+            );
+
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 26. Find students with non-null technology
+    public static List<Student> getStudentsWithNonNullTech() {
+        EntityManager em = getEntityManager();
+
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE s.tech IS NOT NULL",
+                    Student.class
+            );
+
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 27. Find students using a named parameter
+    public static List<Student> getStudentsByNamedParameter(String name) {
+        EntityManager em = getEntityManager();
+
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE s.name = :name",
+                    Student.class
+            );
+
+            query.setParameter("name", name);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 28. Find students using a positional parameter
+    public static List<Student> getStudentsByPositionalParameter(String tech) {
+        EntityManager em = getEntityManager();
+
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE s.tech = ?1",
+                    Student.class
+            );
+
+            query.setParameter(1, tech);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
     public static void main(String[] args) {
         try {
             // CREATE
@@ -577,6 +642,19 @@ public class App {
 
             System.out.println("Student name lengths:");
             System.out.println(getStudentNameLengths());
+            System.out.println("\n--- PARAMETER AND AGGREGATE TESTS ---");
+
+            System.out.println("Sum of student IDs:");
+            System.out.println(getSumOfStudentIds());
+
+            System.out.println("Students with non-null technology:");
+            System.out.println(getStudentsWithNonNullTech());
+
+            System.out.println("Named parameter search:");
+            System.out.println(getStudentsByNamedParameter("John Snow"));
+
+            System.out.println("Positional parameter search:");
+            System.out.println(getStudentsByPositionalParameter("Java"));
         } finally {
             emf.close();
         }
