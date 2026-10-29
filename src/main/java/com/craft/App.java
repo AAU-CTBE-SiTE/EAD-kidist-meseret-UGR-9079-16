@@ -670,9 +670,85 @@ public class App {
         System.out.println("Delete by technology count: " +
                 deleteStudentsByTech("Lab3UpdatedTech"));
 
+
         System.out.println("Temporary students cleaned up.");
     }
-        public static void main (String[]args){
+
+    // 29. Find students with the most common technology
+    public static List<Student> getStudentsWithMostCommonTech() {
+        EntityManager em = getEntityManager();
+
+        try {
+            Query query = em.createQuery(
+                    "SELECT s.tech, COUNT(s) FROM Student s " +
+                            "WHERE s.tech IS NOT NULL " +
+                            "GROUP BY s.tech " +
+                            "ORDER BY COUNT(s) DESC"
+            );
+
+            query.setMaxResults(1);
+            List<Object[]> results = query.getResultList();
+
+            if (results.isEmpty()) {
+                return new java.util.ArrayList<>();
+            }
+
+            String mostCommonTech = (String) results.get(0)[0];
+
+            TypedQuery<Student> studentQuery = em.createQuery(
+                    "SELECT s FROM Student s WHERE s.tech = :tech",
+                    Student.class
+            );
+
+            studentQuery.setParameter("tech", mostCommonTech);
+            return studentQuery.getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
+    // 30. Find students with unique technologies
+    public static List<Student> getStudentsWithUniqueTechs() {
+        EntityManager em = getEntityManager();
+
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE s.tech IN (" +
+                            "SELECT s2.tech FROM Student s2 " +
+                            "WHERE s2.tech IS NOT NULL " +
+                            "GROUP BY s2.tech HAVING COUNT(s2) = 1)",
+                    Student.class
+            );
+
+            return query.getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
+    // 31. Find students whose names are longer than average
+    public static List<Student> getStudentsWithLongerThanAverageNames() {
+        EntityManager em = getEntityManager();
+
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE LENGTH(s.name) > " +
+                            "(SELECT AVG(LENGTH(s2.name)) FROM Student s2 " +
+                            "WHERE s2.name IS NOT NULL)",
+                    Student.class
+            );
+
+            return query.getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
+
+    public static void main (String[]args){
             try {
                 // CREATE
                 Student student = new Student();
@@ -795,12 +871,19 @@ public class App {
 
                 System.out.println("Positional parameter search:");
                 System.out.println(getStudentsByPositionalParameter("Java"));
-                System.out.println("Positional parameter search:");
-                System.out.println(getStudentsByPositionalParameter("Java"));
-
                 System.out.println("\n--- BULK UPDATE AND DELETE TESTS ---");
-                testBulkOperations();
 
+                testBulkOperations();
+                System.out.println("\n--- FINAL JPQL EXERCISES 28-30 ---");
+
+                System.out.println("\nStudents with the most common technology:");
+                System.out.println(getStudentsWithMostCommonTech());
+
+                System.out.println("\nStudents with unique technologies:");
+                System.out.println(getStudentsWithUniqueTechs());
+
+                System.out.println("\nStudents with names longer than average:");
+                System.out.println(getStudentsWithLongerThanAverageNames());
             } finally {
                 emf.close();
             }
