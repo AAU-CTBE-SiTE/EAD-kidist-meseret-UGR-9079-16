@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.Query;
+import jakarta.persistence.EntityTransaction;
 import java.util.List;
 
 public class App {
@@ -90,19 +91,23 @@ public class App {
     }
 
     // DELETE: Remove a student by ID
-    public static void deleteStudentById(int id) {
+    public static int deleteStudentById(int id) {
         EntityManager em = getEntityManager();
 
         try {
             em.getTransaction().begin();
 
             Student student = em.find(Student.class, id);
+            int count = 0;
 
             if (student != null) {
                 em.remove(student);
+                count = 1;
             }
 
             em.getTransaction().commit();
+            return count;
+
         } catch (RuntimeException e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -532,131 +537,272 @@ public class App {
             em.close();
         }
     }
-    public static void main(String[] args) {
+    // Update a student's technology using JPQL
+    public static int updateStudentTechJPQL(int id, String newTech) {
+        EntityManager em = getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
         try {
-            // CREATE
-            Student student = new Student();
-            student.setName("Lab3 Test Student");
-            student.setTech("Java");
+            tx.begin();
 
-            createStudent(student);
+            Query query = em.createQuery(
+                    "UPDATE Student s SET s.tech = :newTech WHERE s.id = :id"
+            );
 
-            // READ
-            int id = student.getId();
-            System.out.println("Created student ID: " + id);
-            System.out.println("Student: " + getStudentById(id));
+            query.setParameter("newTech", newTech);
+            query.setParameter("id", id);
 
-            // UPDATE
-            updateStudentNameAndTech(
-                    "Updated Student", "Python", id);
+            int count = query.executeUpdate();
+            tx.commit();
 
-            System.out.println("After update: " + getStudentById(id));
-
-            // READ ALL
-            System.out.println("All students:");
-            for (Student s : getAllStudents()) {
-                System.out.println(s);
+            return count;
+        } catch (RuntimeException e) {
+            if (tx.isActive()) {
+                tx.rollback();
             }
-
-            // DELETE the test student
-            deleteStudentById(id);
-
-            System.out.println(
-                    "After delete: " + getStudentById(id));
-
-            System.out.println("\n--- JPQL TESTS ---");
-
-            System.out.println("Exact name:");
-            System.out.println(getStudentsByName("John Snow"));
-
-            System.out.println("Case-insensitive name:");
-            System.out.println(
-                    getStudentsByNameCaseInsensitive("john snow"));
-
-            System.out.println("Students using Java:");
-            System.out.println(getStudentsByTech("Java"));
-
-            System.out.println("Names starting with J:");
-            System.out.println(getStudentsByNameStartingWith("J"));
-
-            System.out.println("Names containing Snow:");
-            System.out.println(getStudentsByNameContaining("Snow"));
-
-            System.out.println("Students with ID greater than 0:");
-            System.out.println(getStudentsWithIdGreaterThan(0));
-            System.out.println("\n--- JPQL TESTS 7–12 ---");
-
-            System.out.println("Students ordered by name:");
-            System.out.println(getStudentsOrderedByName());
-
-            System.out.println("Students ordered by ID descending:");
-            System.out.println(getStudentsOrderedByIdDescending());
-
-            System.out.println("Total students: " + countStudents());
-
-            System.out.println("Minimum student ID: " + getMinimumStudentId());
-
-            System.out.println("Maximum student ID: " + getMaximumStudentId());
-
-            System.out.println("Java students whose names contain 'Snow':");
-            System.out.println(getStudentsByTechAndNamePattern("Java", "Snow"));
-            System.out.println("\n--- JPQL TESTS 13–18 ---");
-
-            System.out.println("First 5 students:");
-            System.out.println(getStudentsWithPagination(0, 5));
-
-            System.out.println("Student count by technology:");
-            for (Object[] row : countStudentsByTech()) {
-                System.out.println(row[0] + " = " + row[1]);
-            }
-
-            System.out.println("Distinct technologies:");
-            System.out.println(getDistinctTechs());
-
-            System.out.println("Average student ID:");
-            System.out.println(getAverageId());
-
-            System.out.println("Students with the longest names:");
-            System.out.println(getStudentsWithLongestNames());
-
-            System.out.println("Students with NULL technology:");
-            System.out.println(getStudentsWithNullTech());
-            System.out.println("\n--- JPQL TESTS 19–24 ---");
-
-            System.out.println("Technologies with more than 2 students:");
-            for (Object[] row : getTechsWithMoreThanTwoStudents()) {
-                System.out.println(row[0] + " = " + row[1]);
-            }
-
-            System.out.println("Student with highest ID:");
-            System.out.println(getStudentWithHighestId());
-
-            System.out.println("Students with the same tech as student ID 1:");
-            System.out.println(getStudentsWithSameTechAsStudentOne());
-
-            System.out.println("Students sharing technology:");
-            System.out.println(getStudentsSharingTech());
-
-            System.out.println("Uppercase student names:");
-            System.out.println(getStudentNamesUppercase());
-
-            System.out.println("Student name lengths:");
-            System.out.println(getStudentNameLengths());
-            System.out.println("\n--- PARAMETER AND AGGREGATE TESTS ---");
-
-            System.out.println("Sum of student IDs:");
-            System.out.println(getSumOfStudentIds());
-
-            System.out.println("Students with non-null technology:");
-            System.out.println(getStudentsWithNonNullTech());
-
-            System.out.println("Named parameter search:");
-            System.out.println(getStudentsByNamedParameter("John Snow"));
-
-            System.out.println("Positional parameter search:");
-            System.out.println(getStudentsByPositionalParameter("Java"));
+            throw e;
         } finally {
-            emf.close();
+            em.close();
         }
     }
-}
+    // Update technology for students matching a pattern
+    public static int updateTechByPattern(
+            String oldPattern, String newTech) {
+
+        EntityManager em = getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            Query query = em.createQuery(
+                    "UPDATE Student s SET s.tech = :newTech " +
+                            "WHERE s.tech LIKE :oldPattern"
+            );
+
+            query.setParameter("newTech", newTech);
+            query.setParameter("oldPattern", "%" + oldPattern + "%");
+
+            int count = query.executeUpdate();
+            tx.commit();
+
+            return count;
+        } catch (RuntimeException e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+    // Delete students with a specific technology
+    public static int deleteStudentsByTech(String tech) {
+        EntityManager em = getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            Query query = em.createQuery(
+                    "DELETE FROM Student s WHERE s.tech = :tech"
+            );
+
+            query.setParameter("tech", tech);
+
+            int count = query.executeUpdate();
+            tx.commit();
+
+            return count;
+        } catch (RuntimeException e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+    public static void testBulkOperations() {
+        EntityManager em = getEntityManager();
+        int firstId;
+
+        // Create two temporary students
+        try {
+            em.getTransaction().begin();
+
+            Student first = new Student();
+            first.setName("Lab3 Temporary One");
+            first.setTech("Lab3TempTech");
+            em.persist(first);
+
+            Student second = new Student();
+            second.setName("Lab3 Temporary Two");
+            second.setTech("Lab3TempTech");
+            em.persist(second);
+
+            em.flush();
+
+            firstId = first.getId();
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+
+
+        // Update both temporary students by technology pattern
+        System.out.println("Pattern update count: " +
+                updateTechByPattern("Lab3TempTech", "Lab3UpdatedTech"));
+
+        // Update only the first temporary student
+        System.out.println("Single update count: " +
+                updateStudentTechJPQL(firstId, "Lab3FinalTech"));
+
+        // Delete the first temporary student by ID
+        System.out.println("Delete by ID count: " + deleteStudentById(firstId));
+
+        // Delete the second temporary student by its unique technology
+        System.out.println("Delete by technology count: " +
+                deleteStudentsByTech("Lab3UpdatedTech"));
+
+        System.out.println("Temporary students cleaned up.");
+    }
+        public static void main (String[]args){
+            try {
+                // CREATE
+                Student student = new Student();
+                student.setName("Lab3 Test Student");
+                student.setTech("Java");
+
+                createStudent(student);
+
+                // READ
+                int id = student.getId();
+                System.out.println("Created student ID: " + id);
+                System.out.println("Student: " + getStudentById(id));
+
+                // UPDATE
+                updateStudentNameAndTech(
+                        "Updated Student", "Python", id);
+
+                System.out.println("After update: " + getStudentById(id));
+
+                // READ ALL
+                System.out.println("All students:");
+                for (Student s : getAllStudents()) {
+                    System.out.println(s);
+                }
+
+                // DELETE the test student
+                deleteStudentById(id);
+
+                System.out.println(
+                        "After delete: " + getStudentById(id));
+
+                System.out.println("\n--- JPQL TESTS ---");
+
+                System.out.println("Exact name:");
+                System.out.println(getStudentsByName("John Snow"));
+
+                System.out.println("Case-insensitive name:");
+                System.out.println(
+                        getStudentsByNameCaseInsensitive("john snow"));
+
+                System.out.println("Students using Java:");
+                System.out.println(getStudentsByTech("Java"));
+
+                System.out.println("Names starting with J:");
+                System.out.println(getStudentsByNameStartingWith("J"));
+
+                System.out.println("Names containing Snow:");
+                System.out.println(getStudentsByNameContaining("Snow"));
+
+                System.out.println("Students with ID greater than 0:");
+                System.out.println(getStudentsWithIdGreaterThan(0));
+                System.out.println("\n--- JPQL TESTS 7–12 ---");
+
+                System.out.println("Students ordered by name:");
+                System.out.println(getStudentsOrderedByName());
+
+                System.out.println("Students ordered by ID descending:");
+                System.out.println(getStudentsOrderedByIdDescending());
+
+                System.out.println("Total students: " + countStudents());
+
+                System.out.println("Minimum student ID: " + getMinimumStudentId());
+
+                System.out.println("Maximum student ID: " + getMaximumStudentId());
+
+                System.out.println("Java students whose names contain 'Snow':");
+                System.out.println(getStudentsByTechAndNamePattern("Java", "Snow"));
+                System.out.println("\n--- JPQL TESTS 13–18 ---");
+
+                System.out.println("First 5 students:");
+                System.out.println(getStudentsWithPagination(0, 5));
+
+                System.out.println("Student count by technology:");
+                for (Object[] row : countStudentsByTech()) {
+                    System.out.println(row[0] + " = " + row[1]);
+                }
+
+                System.out.println("Distinct technologies:");
+                System.out.println(getDistinctTechs());
+
+                System.out.println("Average student ID:");
+                System.out.println(getAverageId());
+
+                System.out.println("Students with the longest names:");
+                System.out.println(getStudentsWithLongestNames());
+
+                System.out.println("Students with NULL technology:");
+                System.out.println(getStudentsWithNullTech());
+                System.out.println("\n--- JPQL TESTS 19–24 ---");
+
+                System.out.println("Technologies with more than 2 students:");
+                for (Object[] row : getTechsWithMoreThanTwoStudents()) {
+                    System.out.println(row[0] + " = " + row[1]);
+                }
+
+                System.out.println("Student with highest ID:");
+                System.out.println(getStudentWithHighestId());
+
+                System.out.println("Students with the same tech as student ID 1:");
+                System.out.println(getStudentsWithSameTechAsStudentOne());
+
+                System.out.println("Students sharing technology:");
+                System.out.println(getStudentsSharingTech());
+
+                System.out.println("Uppercase student names:");
+                System.out.println(getStudentNamesUppercase());
+
+                System.out.println("Student name lengths:");
+                System.out.println(getStudentNameLengths());
+                System.out.println("\n--- PARAMETER AND AGGREGATE TESTS ---");
+
+                System.out.println("Sum of student IDs:");
+                System.out.println(getSumOfStudentIds());
+
+                System.out.println("Students with non-null technology:");
+                System.out.println(getStudentsWithNonNullTech());
+
+                System.out.println("Named parameter search:");
+                System.out.println(getStudentsByNamedParameter("John Snow"));
+
+                System.out.println("Positional parameter search:");
+                System.out.println(getStudentsByPositionalParameter("Java"));
+                System.out.println("Positional parameter search:");
+                System.out.println(getStudentsByPositionalParameter("Java"));
+
+                System.out.println("\n--- BULK UPDATE AND DELETE TESTS ---");
+                testBulkOperations();
+
+            } finally {
+                emf.close();
+            }
+        }
+    }
