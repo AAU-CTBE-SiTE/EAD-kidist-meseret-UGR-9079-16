@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="313c1405-985a-4bcf-969b-554365b34abd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/craft/Address.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/craft/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/craft/Student.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/craft/Subject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
