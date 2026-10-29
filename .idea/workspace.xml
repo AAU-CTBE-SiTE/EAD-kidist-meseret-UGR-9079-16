@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="313c1405-985a-4bcf-969b-554365b34abd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/craft/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/craft/Student.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/beansConfig.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/craft/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/craft/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/craft/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/craft/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/beansConfig.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/beansConfig.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +35,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.App.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",

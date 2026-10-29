@@ -12,6 +12,9 @@ public class App {
 
         Student student = context.getBean("student", Student.class);
 
-        student.getHello();
+        student.getDetails();
+
+        System.out.println("Student Name: " + student.getName());
+        System.out.println(student);
     }
 }
