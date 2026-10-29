@@ -4,38 +4,5 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        https://www.springframework.org/schema/beans/spring-beans.xsd">
 
-
-
-
-    <bean id="address" class="com.craft.Address">
-        <property name="city" value="Addis"/>
-        <property name="country" value="Ethiopia"/>
-    </bean>
-
-    <bean id="math" class="com.craft.Subject">
-        <property name="subjectName" value="Maths 101"/>
-    </bean>
-
-    <bean id="Java" class="com.craft.Subject">
-        <property name="subjectName" value="Java EE"/>
-    </bean>
-
-    <bean id="student" class="com.craft.Student">
-        <constructor-arg name="id" value="101"/>
-        <constructor-arg name="name" value="John Doe"/>
-        <constructor-arg name="age" value="20"/>
-
-        <property name="address" ref="address"/>
-
-        <property name="subjects">
-            <list>
-                <ref bean="math"/>
-                <ref bean="Java"/>
-            </list>
-        </property>
-    </bean>
-
-
-
-
+    <bean id="student" class="com.craft.Student" scope="prototype"/>
 </beans>
