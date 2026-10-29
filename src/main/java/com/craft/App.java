@@ -298,7 +298,88 @@ public class App {
             em.close();
         }
     }
+    // 13. Get students using pagination
+    public static List<Student> getStudentsWithPagination(
+            int offset, int limit) {
 
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s ORDER BY s.id ASC",
+                    Student.class);
+
+            query.setFirstResult(offset);
+            query.setMaxResults(limit);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 14. Count students by technology
+    public static List<Object[]> countStudentsByTech() {
+        EntityManager em = getEntityManager();
+        try {
+            Query query = em.createQuery(
+                    "SELECT s.tech, COUNT(s) FROM Student s GROUP BY s.tech");
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 15. Find distinct technologies
+    public static List<String> getDistinctTechs() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<String> query = em.createQuery(
+                    "SELECT DISTINCT s.tech FROM Student s",
+                    String.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 16. Find average student ID
+    public static Double getAverageId() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Double> query = em.createQuery(
+                    "SELECT AVG(s.id) FROM Student s",
+                    Double.class);
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 17. Find students with the longest names
+    public static List<Student> getStudentsWithLongestNames() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE LENGTH(s.name) = " +
+                            "(SELECT MAX(LENGTH(s2.name)) FROM Student s2)",
+                    Student.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // 18. Find students whose technology is NULL
+    public static List<Student> getStudentsWithNullTech() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Student> query = em.createQuery(
+                    "SELECT s FROM Student s WHERE s.tech IS NULL",
+                    Student.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
     public static void main(String[] args) {
         try {
             // CREATE
@@ -367,6 +448,27 @@ public class App {
 
             System.out.println("Java students whose names contain 'Snow':");
             System.out.println(getStudentsByTechAndNamePattern("Java", "Snow"));
+            System.out.println("\n--- JPQL TESTS 13–18 ---");
+
+            System.out.println("First 5 students:");
+            System.out.println(getStudentsWithPagination(0, 5));
+
+            System.out.println("Student count by technology:");
+            for (Object[] row : countStudentsByTech()) {
+                System.out.println(row[0] + " = " + row[1]);
+            }
+
+            System.out.println("Distinct technologies:");
+            System.out.println(getDistinctTechs());
+
+            System.out.println("Average student ID:");
+            System.out.println(getAverageId());
+
+            System.out.println("Students with the longest names:");
+            System.out.println(getStudentsWithLongestNames());
+
+            System.out.println("Students with NULL technology:");
+            System.out.println(getStudentsWithNullTech());
         } finally {
             emf.close();
         }
