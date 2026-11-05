@@ -7,7 +7,7 @@
 
     <bean id="student"
           class="com.craft.Student"
-          scope="singleton">
+          scope="prototype">
     </bean>
 
 </beans>
