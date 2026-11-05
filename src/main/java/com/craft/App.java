@@ -10,11 +10,16 @@ public class App {
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("beansConfig.xml");
 
-        Student student =
+        Student student1 =
                 context.getBean("student", Student.class);
 
-        System.out.println(student);
+        Student student2 =
+                context.getBean("student", Student.class);
 
-        student.getDetails();
+        System.out.println(student1 == student2);
+
+        student1.setName("John Doe");
+
+        System.out.println(student2.getName());
     }
 }
