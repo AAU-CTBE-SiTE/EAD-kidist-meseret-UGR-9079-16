@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,5 +74,28 @@ public class ActorController {
         return null;
     }
 
+    // CRUD - PARTIAL UPDATE
+    @PatchMapping("/actor/{id}")
+    public Actor patchActor(@PathVariable int id,
+                            @RequestBody Actor updatedActor) {
+
+        for (Actor actor : actors) {
+
+            if (actor.getId() == id) {
+
+                if (updatedActor.getName() != null) {
+                    actor.setName(updatedActor.getName());
+                }
+
+                if (updatedActor.getMovieName() != null) {
+                    actor.setMovieName(updatedActor.getMovieName());
+                }
+
+                return actor;
+            }
+        }
+
+        return null;
+    }
 
 }

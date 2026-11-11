@@ -2,7 +2,7 @@ package com.site.actor_management.model;
 
 public class Actor {
 
-    private int id;
+    private Integer id;
     private String name;
     private String movieName;
 
