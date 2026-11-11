@@ -23,4 +23,7 @@ public class StudentService {
     public String getStudentName() {
         return "Abebe";
     }
+    public void testException() {
+        throw new RuntimeException("Student operation failed!");
+    }
 }

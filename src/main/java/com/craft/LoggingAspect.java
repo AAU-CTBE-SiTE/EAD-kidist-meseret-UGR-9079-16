@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.springframework.stereotype.Component;
-
+import org.aspectj.lang.annotation.AfterThrowing;
 @Aspect
 @Component
 public class LoggingAspect {
@@ -26,5 +26,12 @@ public class LoggingAspect {
     )
     public void logAfterReturning(String result) {
         System.out.println("Method returned successfully. Student name: " + result);
+    }
+    @AfterThrowing(
+            pointcut = "execution(* com.craft.StudentService.testException(..))",
+            throwing = "exception"
+    )
+    public void logAfterThrowing(Exception exception) {
+        System.out.println("Exception occurred: " + exception.getMessage());
     }
 }

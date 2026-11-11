@@ -18,9 +18,15 @@ public class App {
         studentService.updateStudent();
         studentService.deleteStudent();
         studentService.displayStudents();
-        String studentName = studentService.getStudentName();
 
+        String studentName = studentService.getStudentName();
         System.out.println("Returned student name: " + studentName);
+
+        try {
+            studentService.testException();
+        } catch (RuntimeException e) {
+            System.out.println("Caught exception: " + e.getMessage());
+        }
         // Close Spring container
         context.close();
     }
