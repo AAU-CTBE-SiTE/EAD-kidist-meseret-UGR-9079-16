@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,5 +55,23 @@ public class ActorController {
 
         return actor;
     }
+
+    // CRUD - UPDATE
+    @PutMapping("/actor/{id}")
+    public Actor updateActor(@PathVariable int id,
+                             @RequestBody Actor updatedActor) {
+
+        for (int i = 0; i < actors.size(); i++) {
+
+            if (actors.get(i).getId() == id) {
+                actors.set(i, updatedActor);
+
+                return updatedActor;
+            }
+        }
+
+        return null;
+    }
+
 
 }
