@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +97,22 @@ public class ActorController {
         }
 
         return null;
+    }
+    // CRUD - DELETE
+    @DeleteMapping("/{id}")
+    public String deleteActorById(@PathVariable int id) {
+
+        for (int i = 0; i < actors.size(); i++) {
+
+            if (actors.get(i).getId() == id) {
+
+                actors.remove(i);
+
+                return "Actor deleted successfully";
+            }
+        }
+
+        return "Actor not found";
     }
 
 }
