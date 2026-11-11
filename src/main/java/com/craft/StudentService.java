@@ -20,4 +20,7 @@ public class StudentService {
     public void displayStudents() {
         System.out.println("Displaying all students...");
     }
+    public String getStudentName() {
+        return "Abebe";
+    }
 }

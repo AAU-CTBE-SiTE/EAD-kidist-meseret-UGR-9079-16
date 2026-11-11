@@ -18,7 +18,9 @@ public class App {
         studentService.updateStudent();
         studentService.deleteStudent();
         studentService.displayStudents();
+        String studentName = studentService.getStudentName();
 
+        System.out.println("Returned student name: " + studentName);
         // Close Spring container
         context.close();
     }
