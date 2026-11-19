@@ -1,5 +1,4 @@
 package com.site.studentcrud.model;
-
 import jakarta.persistence.*;
 
 @Entity
